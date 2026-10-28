@@ -1,0 +1,30 @@
+# ==============================================================================
+# Nilayam Heights HMS & Yadav PG — Render.com Blueprint (100% Free Tier)
+# ==============================================================================
+# Deploys as a free Docker Web Service with automatic dynamic port binding
+# and zero-downtime health checking.
+# ==============================================================================
+
+services:
+  - type: web
+    name: nilayam-heights-hms
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /home/home.php
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false

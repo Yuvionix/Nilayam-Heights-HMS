@@ -207,7 +207,7 @@ Navigate to:
 
 ---
 
-### Option B: 🐳 Docker Container Deployment
+### Option B: 🐳 Local Docker Container Deployment
 
 ```bash
 docker compose up -d --build
@@ -217,6 +217,41 @@ Access containerized endpoints:
 - 🌐 **Landing Page**: [http://localhost:8080/home/home.php](http://localhost:8080/home/home.php)
 - 🛡️ **Central Admin Portal**: [http://localhost:8080/admin_login.php](http://localhost:8080/admin_login.php)
 - 🎓 **Yadav PG Portal**: [http://localhost:8080/pg/login.php](http://localhost:8080/pg/login.php)
+
+---
+
+### Option C: ☁️ 100% Free Cloud Deployment on Render (Zero Cost, No Credit Card)
+
+You can host this entire platform in the cloud completely free of cost using **Render's Free Web Service Tier** combined with a **Free Cloud MySQL Database** (such as Aiven or TiDB Cloud):
+
+#### 1. Create a 100% Free MySQL Database (No Credit Card)
+1. Sign up for free at **[Aiven.io](https://aiven.io)** (or **[TiDB Cloud](https://tidbcloud.com)**).
+2. Create a free MySQL database instance (Free Tier — 100% free forever, no payment details required).
+3. Copy your database credentials:
+   - `DB_HOST` (e.g. `mysql-xyz.aivencloud.com`)
+   - `DB_PORT` (e.g. `12345`)
+   - `DB_NAME` (e.g. `defaultdb` or `hms`)
+   - `DB_USER` (e.g. `avnadmin` or `root`)
+   - `DB_PASS` (your database password)
+4. Open the SQL console or connect via MySQL CLI and import [`HMS-2/hms.sql`](HMS-2/hms.sql) into your database.
+
+#### 2. Deploy Web Service on Render (Free Tier)
+1. Log into **[render.com](https://render.com)** using your GitHub account (`Yuvionix`).
+2. Click **New +** → **Web Service**.
+3. Select your repository: **`Yuvionix/Nilayam-Heights-HMS`**.
+4. Configure the settings:
+   - **Name**: `nilayam-heights-hms`
+   - **Language / Runtime**: `Docker` *(Render detects `Dockerfile` automatically)*
+   - **Instance Type / Plan**: Select **`Free`** ($0 / month)
+5. Under **Environment Variables**, add your cloud database credentials:
+   - `DB_HOST` = `<your cloud host>`
+   - `DB_PORT` = `<your cloud port>`
+   - `DB_NAME` = `<your cloud db name>`
+   - `DB_USER` = `<your cloud db user>`
+   - `DB_PASS` = `<your cloud db pass>`
+   - `APP_ENV` = `production`
+6. Click **Create Web Service**.
+7. Render will build the Docker container using dynamic port binding and issue your live HTTPS URL (e.g. `https://nilayam-heights-hms.onrender.com`)!
 
 ---
 
