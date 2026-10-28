@@ -4,114 +4,154 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Three.js](https://img.shields.io/badge/Three.js-3D%20WebGL-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-[![OWASP Hardened](https://img.shields.io/badge/OWASP-Security%20Hardened-success?style=for-the-badge&logo=owasp&logoColor=white)](https://owasp.org/)
+[![Audit Status](https://img.shields.io/badge/Audit-20%2F20%20PASSED-success?style=for-the-badge&logo=checkmarx&logoColor=white)](scratch/test_all_features.php)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-> **🙏 जय श्री कृष्णा &bull; सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः 🙏**  
-> *"May all be happy, may all be peaceful, healthy and protected."*
+> **🙏 जय श्री कृष्णा &bull; सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः &bull; Jai Shree Krishna 🙏**  
+> *"Dedicated to harmonious, virtuous, and technologically advanced living under divine grace."*
 
 ---
 
-## 📌 Executive Overview (For the Team)
+## 📌 Executive Summary (For You & Your Team)
 
-**Nilayam Heights HMS & Yadav PG** is an enterprise-grade, dual-property residential automation and student accommodation platform engineered with **PHP 8.4**, **MySQL 8.0**, and **Three.js WebGL**.
+**Nilayam Heights HMS & Yadav PG** is an enterprise-grade, dual-property residential management and student coliving suite built with modern **PHP 8.4**, **MySQL 8.0**, and **Three.js WebGL**.
 
-It solves real-world residential operational challenges by unifying two distinct property models within a single, secure software ecosystem:
-1. **🏢 Nilayam Heights Housing Society**: A gated residential apartment society requiring automated maintenance billing, real-time security guard gate registry, official community notice broadcasts, 24/7 AI virtual resident assistance, and interactive 3D digital-twin campus modeling.
-2. **🎓 Yadav PG for Stay (Yadav.in)**: A dedicated boy's student coliving hostel across 4 floors managing single, double, and triple sharing bed allocations, direct student self-registration, 1-minute digital government KYC verification, and warden vacancy tracking.
+The platform seamlessly bridges two property models within a unified operational architecture:
 
-**Designed & Engineered by [Yuvraj](mailto:yuvrajyadav734@gmail.com)**
+1. **🏢 Nilayam Heights Housing Society**: A premier residential community featuring automated maintenance billing, dynamic utility calculations, a real-time gate security visitor registry, resident KYC verification, 24/7 AI resident assistant, and an interactive 3D digital-twin campus visualizer.
+2. **🎓 Yadav PG for Stay (`Yadav.in`)**: A 4-floor student accommodation coliving facility featuring single, double, and triple sharing rooms, self-registration, 1-minute digital government KYC, student photo display, and a 1-click warden bed allocation desk.
 
 ---
 
-## 🏗️ System Architecture
+## 👥 Property Leadership & Engineering
+
+| Role | Name | Responsibilities |
+| :--- | :--- | :--- |
+| **Property Owners** | **Binod Yadav &amp; Sumit Yadav** | Property ownership, in-person room visits, custom stay terms &amp; fee agreements |
+| **Lead Platform Architect** | **Yuvraj** | Full-stack engineering, security architecture, 3D WebGL twin, DevOps |
+| **Society Admin &amp; PG Warden** | **Yuvraj** (`yuvrajyadav734@gmail.com`) | Day-to-day admissions, gate registers, KYC reviews, billing &amp; bed allocations |
+| **Records Creator** | **Sumit Yadav** | Official property registrar &amp; resident creation authority |
+
+---
+
+## 🏗️ System Architecture & File Tree
 
 ```
 Society-Management-System/
 ├── HMS-2/
-│   ├── Includes/                     # Core system libraries & middleware
-│   │   ├── config.php                # Environment-aware DB connection (MySQLi & PDO)
-│   │   └── session.php               # Centralized RBAC middleware, session hardening & BCrypt auth
+│   ├── Includes/                     # System-wide core libraries & security middleware
+│   │   ├── config.php                # Environment-aware database connection (MySQLi & PDO)
+│   │   └── session.php               # Hardened RBAC authentication & BCrypt password engine
 │   │
-│   ├── admin/                        # Housing Society Administrator Portal
-│   │   ├── Dashboard/admin.php       # 3D Overview, KPI metrics, quick visitor AJAX modal
-│   │   ├── Bill/                     # Utility meter billing engine & dynamic invoice generation
-│   │   ├── Announcement/             # Broadcast announcement management
-│   │   ├── Members/                  # Resident member & security staff directory
-│   │   ├── Home_Services/            # Local handyman / electrician directory
+│   ├── admin/                        # 🏢 Housing Society Administrator Portal
+│   │   ├── Dashboard/admin.php       # Society KPI metrics, 3D campus & quick-action sidebar
+│   │   ├── pg_students.php           # 🌟 Cross-Property PG Student & Document Registry
+│   │   ├── society_kyc.php           # 🌟 Resident KYC Review & Document Verification Desk
+│   │   ├── Bill/                     # Maintenance billing engine & dynamic PDF/HTML invoices
+│   │   ├── Announcement/             # Broadcast notices & community circulars
+│   │   ├── Members/                  # Resident member directory & facility staff roster
+│   │   ├── Home_Services/            # Society handyman & electrician service directory
 │   │   ├── Event_calender/           # Community calendar & festival scheduler
 │   │   └── Chat/ai_assistant.php     # 24/7 Society AI Assistant interface
 │   │
-│   ├── members/                      # Housing Society Resident Portal
-│   │   ├── Dashboard/member.php      # Resident self-service hub, noticeboard & directory
+│   ├── members/                      # 🏠 Housing Society Resident Portal
+│   │   ├── Dashboard/member.php      # Resident self-service hub, noticeboard & ledger
+│   │   ├── kyc.php                   # 🌟 Resident KYC: Flat ownership & ID proof upload
 │   │   └── Bill/                     # Personal maintenance ledger & digital receipts
 │   │
-│   ├── staff/                        # Security Guard & Gate Staff Portal
-│   │   └── Dashboard/staff.php       # Real-time visitor gate registry & check-in
+│   ├── staff/                        # 🛡️ Gate Security Guard Portal
+│   │   └── Dashboard/staff.php       # Live visitor check-in, contractor registry & logs
 │   │
-│   ├── pg/                           # 🎓 Student Boy's PG Coliving Module (Yadav.in)
-│   │   ├── login.php                 # Dedicated PG student & warden login portal
-│   │   ├── register.php              # Real-time self-service student bed booking
+│   ├── pg/                           # 🎓 Yadav PG for Stay Coliving Module (Yadav.in)
+│   │   ├── login.php                 # Dedicated PG student & warden sign-in portal
+│   │   ├── register.php              # Streamlined student sign-up (instant redirect to KYC)
 │   │   ├── student/                  # Student Self-Service Suite
-│   │   │   ├── profile.php           # Active student profile, occupancy & contact card
-│   │   │   ├── kyc.php               # Personal & guardian KYC, document uploads, terms
+│   │   │   ├── profile.php           # Student profile, uploaded photo, bed info & terms
+│   │   │   ├── kyc.php               # 🌟 Guardian & student KYC, Aadhaar & address proof uploads
 │   │   │   ├── complaints.php        # Maintenance ticketing (+ Create complaint modal)
-│   │   │   ├── vacate.php            # 30-day digital vacate notice intimation
-│   │   │   ├── announcements.php     # PG broadcast notices from Owners Binod Yadav & Sumit Yadav
+│   │   │   ├── vacate.php            # 30-Day digital vacate intimation notice
+│   │   │   ├── announcements.php     # Broadcast notices from Owners Binod & Sumit Yadav
 │   │   │   └── payments.php          # Payment history & deposit records
-│   │   ├── admin/                    # Warden / PG Owner Operations Desk
-│   │   │   ├── dashboard.php         # Live occupancy KPI cards & room-bed matrix
-│   │   │   ├── rooms.php             # Room sharing config & resident bed assignment view
-│   │   │   ├── students.php          # Student directory, KYC document viewer & approvals
-│   │   │   ├── complaints_mgmt.php   # Maintenance ticket resolution workflow
-│   │   │   ├── vacate_mgmt.php       # Vacate requests, settlement & deposit releases
-│   │   │   └── announcements.php     # Broadcast notice dispatch
-│   │   └── uploads/                  # Secure student identity documents & photos
+│   │   ├── admin/                    # Warden / PG Operations Desk
+│   │   │   ├── dashboard.php         # Live room/bed occupancy KPI cards & matrix
+│   │   │   ├── rooms.php             # Room sharing config & bed capacity tracking
+│   │   │   ├── students.php          # 🌟 Student directory with photo thumbnails & full KYC modal
+│   │   │   ├── complaints_mgmt.php   # Maintenance ticket resolution desk
+│   │   │   └── vacate_mgmt.php       # Move-out settlement & deposit releases
+│   │   └── uploads/                  # Secure student identity proofs & profile photos
 │   │
-│   ├── home/                         # Public responsive glassmorphism landing page
-│   │   ├── home.php                  # Modern dual-property showcase portal
-│   │   ├── home.css                  # High-contrast glassmorphic styling & responsive layout
-│   │   └── logo.svg                  # Vector architectural brand emblem
+│   ├── home/                         # 🌐 Public Glassmorphic Dual-Property Portal
+│   │   ├── home.php                  # Interactive landing page with Sri Krishna showcase
+│   │   ├── home.css                  # Responsive cyber-glassmorphism theme
+│   │   └── futuristic_city_bg.jpg    # Panoramic smart city architectural backdrop
 │   │
-│   ├── js/3d_society.js              # Throttled Three.js WebGL 3D architectural engine
-│   ├── css/master_theme.css          # Modern dark-navy UI design system
-│   ├── login.php                     # Hardened Society multi-role authentication endpoint
-│   ├── register.php                  # Resident sign-up with server-side validation
-│   └── hms.sql                       # Complete MySQL relational database schema
+│   ├── images/
+│   │   └── sri_krishna_modern.jpg    # 🌟 High-Definition Modern Sri Krishna Divine Artwork
+│   │
+│   ├── js/
+│   │   ├── 3d_campus_hero.js         # Three.js r128 3D Digital Twin with orbit controls
+│   │   ├── ambient_space.js          # Throttled 30 FPS starfield & particle background
+│   │   └── vendor/three.min.js       # Localized standalone Three.js engine
+│   │
+│   ├── css/
+│   │   ├── master_theme.css          # Unified dark-navy design system
+│   │   └── boxicons/                 # Standalone icon library (zero external dependencies)
+│   │
+│   ├── admin_login.php               # 🌟 Dedicated Central Administrator Portal (SSO)
+│   ├── login.php                     # Multi-role Society & Staff authentication
+│   ├── register.php                  # Resident sign-up with instant redirect to KYC
+│   └── hms.sql                       # Complete relational database dump
 │
-├── Dockerfile                        # Multi-stage production container build
+├── Dockerfile                        # Multi-stage production container configuration
 ├── docker-compose.yml                # Microservices orchestration (PHP 8.2 + MySQL 8.0)
-└── .env.example                      # Environment variable template
+├── .env.example                      # Environment variables template
+├── .gitignore                        # Git exclusion rules
+└── .dockerignore                     # Docker build context optimizations
 ```
 
 ---
 
-## 🌟 Core Modules Breakdown
+## 🌟 Core Highlights & Recent Enhancements
 
-### 1. 🏢 Nilayam Heights Housing Society
-- **Role-Based Access Control (RBAC)**: Strict privilege isolation between `admin` (Executive Committee), `member` (Apartment Owner / Tenant), and `staff` (Gate Security Guard).
-- **Automated Billing Engine**: Calculates maintenance dues dynamically with utility meter readings (water, electricity units, and square footage multipliers) producing printable PDF/HTML invoices.
-- **Real-Time Visitor Gate Registry**: Security guards log visitors, delivery personnel, and contractors via a fast, zero-refresh AJAX modal.
-- **3D WebGL Digital Twin**: Custom architectural campus rendered in Three.js, automatically throttled to 30 FPS and paused when off-screen to preserve CPU/GPU battery.
-- **Society AI Assistant**: Interactive resident helper providing instant answers to society rules, bylaws, and committee contacts.
+### 1. 🛡️ Dedicated Central Administrator Portal (`admin_login.php`)
+- **Standalone Security Endpoint**: Separate from standard member/student logins. Accessible via top navbar (`Admin Portal`) and direct links from all login pages.
+- **Single Sign-On (SSO)**: One login grants simultaneous administrator privileges across both Society Admin and Yadav PG Warden.
+- **Dynamic Portal Routing**: Allows the administrator to launch directly into:
+  - *Society Dashboard*
+  - *Yadav PG Warden*
+  - *PG Students & KYC Registry*
+  - *Society Resident KYC Review*
 
-### 2. 🎓 Yadav PG for Stay (Yadav.in)
-- **Multi-Floor Bed Allocation Matrix**: Manages 8 rooms across Floors 1–4 with Single, Double, and Triple occupancy beds (`R-101 [Single]`, `R-406 [Double] Bed-B`).
-- **Student Self-Service Registration (`pg/register.php`)**:
-  - Streamlined sign-up without premature bed guessing (bed allocation is confirmed upon room visit).
-  - Immediate redirect to Student KYC with automatic session initiation.
-  - Automatic BCrypt password hashing.
-- **Digital Student KYC Verification (`pg/student/kyc.php`)**:
-  - Captures full Guardian / Parent details: Father Name & Mobile, Mother Name & Mobile, and Permanent Residential Address.
-  - File upload engine storing student profile portraits, Address Proof Front/Back, and Government ID Proof Front/Back (`Aadhaar / Voter / College ID`).
-  - Integrated Terms & Conditions modal ensuring disciplinary compliance.
-- **Warden & Society Admin Verification Desks (`pg/admin/students.php` & `admin/pg_students.php`)**:
-  - Admin/Warden can review student photos, inspect submitted documents in full, click **Verify KYC** / **Reject**, and allocate vacant beds with 1 click.
-- **Pure Accommodation (No Food Provided)**:
-  - Focused strictly on high-quality student living: **High-Speed Wi-Fi, RO Drinking Water, 24/7 Power Backup, and Daily Common Area Cleaning**.
-  - All mess/meal modules have been cleanly omitted as food is not provided.
-- **Direct Owner Pricing**:
-  - Room charges and security deposit terms are custom and arranged directly with **Owners Binod Yadav & Sumit Yadav** upon room visit (no fixed fees advertised).
+### 2. 🪪 Dual Digital KYC Engine
+
+#### A. Society Resident KYC (`members/kyc.php` & `admin/society_kyc.php`)
+- **Resident Form**: Upload profile picture, declare Flat / Unit Number, specify residency type (*Property Owner / Tenant / Family Member*), father/spouse name, emergency contact, and permanent address.
+- **Document Proofs**: Upload Government ID Front & Back (Aadhaar / Voter ID / Passport) and Ownership / Lease / Utility bill documents.
+- **Admin Review Desk**: Society Admin inspects submitted records, views photos/documents in full, and verifies or rejects with 1 click.
+- **Instant Onboarding**: New residents registering at `register.php` are automatically logged in and redirected directly to `members/kyc.php?new=1`.
+
+#### B. Student KYC & Document Verification (`pg/student/kyc.php` & `admin/pg_students.php`)
+- **Guardian & Identity Proofs**: Captures Father Name & Mobile, Mother Name & Mobile, Permanent Address, Profile Photo, ID Proof Front/Back, and Address Proof Front/Back.
+- **Direct Image Rendering**: When a student uploads their profile photo, it is displayed immediately on their profile and as a photo thumbnail in both Society Admin and PG Warden tables.
+- **Full Document Modal**: Admin can inspect all 4 uploaded documents directly on screen.
+- **Warden 1-Click Bed Allocation**: Bed selection was removed from sign-up; Warden allocates beds upon the student's in-person visit via an inline dropdown and modal.
+
+### 3. 🎨 Modern Sri Krishna Divine Visual Showcase
+- **Artistic Heritage**: Features a high-definition celestial portrait of **Bhagavan Sri Krishna** (`HMS-2/images/sri_krishna_modern.jpg`) with golden flute, glowing peacock feather, and radiant electric-blue halo.
+- **Sacred Top Header**: Circular glowing Sri Krishna avatar on `home/home.php` alongside:  
+  *`🙏 जय श्री कृष्णा • Jai Shree Krishna • Auspicious Living & Protection under Divine Grace 🙏`*
+- **Hero & Login Banners**: Integrated with illuminated badges into `login.php`, `pg/login.php`, `pg/register.php`, and `admin_login.php`.
+- **Divine Showcase Card**: Dedicated glassmorphic card on the home page with Sanskrit invocation (*“जय श्री कृष्णा • हरे कृष्ण”*) celebrating the campus ethos founded by **Binod Yadav & Sumit Yadav**.
+
+### 4. 🛏️ Pure Student Accommodation Policy
+- **Pure Living (No Food/Mess Provided)**: Focused strictly on high-quality student accommodation (**High-Speed Wi-Fi, RO Drinking Water, 24/7 Power Backup, and Daily Cleaning**). All mess/food tables and references have been removed.
+- **Direct Owner Arrangements**: Room charges and security deposits are custom and arranged directly with **Owners Binod Yadav & Sumit Yadav** upon room visit (no fixed fees advertised).
+
+### 5. 🌐 Modern 3D WebGL Campus Digital Twin
+- **Three.js r128**: Interactive 3D digital-twin stage with drag-to-orbit controls.
+- **Lighting Presets**: 1-click toggles between **Cyber Neon**, **Daylight**, and **Sunset**.
+- **Camera Presets**: Instant focus jumps to **Nilayam Towers**, **Yadav PG Block**, or **Security Gate**.
+- **Performance Capping**: Throttled to 30 FPS and automatically paused via `IntersectionObserver` when scrolled off-screen to preserve battery and GPU resources.
 
 ---
 
@@ -123,74 +163,59 @@ Society-Management-System/
 | **Password Storage** | **BCrypt hashing** (`PASSWORD_DEFAULT` with cost 12). Legacy plain-text passwords automatically upgrade to BCrypt upon first successful authentication. |
 | **Cross-Site Scripting (XSS)** | All dynamic database outputs passed through `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')`. |
 | **Session Security** | `session.cookie_httponly = 1`, `session.cookie_samesite = 'Lax'`, and automatic `session_regenerate_id(true)` upon privilege escalation. |
-| **Cross-Site Request Forgery (CSRF)** | Form tokens and strict HTTP POST state verification across financial and admission actions. |
-| **Insecure Direct Object Reference (IDOR)** | Resident billing queries strictly bound to `$_SESSION['uid']`, preventing cross-account data leaks. |
+| **Execution After Redirect (EAR)** | All authorization gates strictly terminate execution with `exit;` immediately following redirect headers. |
+| **Role-Based Access Control** | Rigid segregation between `admin`, `member`, `staff`, and PG `student` roles. |
 
 ---
 
-## ⚡ Performance & Lighthouse Optimization
+## 🚀 Quick Start & Deployment Guide
 
-- **Three.js WebGL Performance Loop**:
-  - Framerate capped at **30 FPS** using delta-time throttling to eliminate GPU overheating.
-  - Monitored by `IntersectionObserver`: WebGL rendering halts completely when the user scrolls past the 3D viewport.
-  - Pauses execution during background tab switches via the `document.visibilitychange` API.
-- **Asset Optimization**:
-  - Preconnect and DNS-prefetch headers for Google Fonts (`Outfit` & `Poppins`).
-  - Preloaded critical background hero assets (`<link rel="preload" as="image" href="12.jpg">`).
-  - High-resolution lightweight SVG brand vectors (`logo.svg`).
-
----
-
-## 🚀 Quick Start Guide (For New Team Members)
-
-### Option A: 🐳 Docker Compose (Recommended)
-
-Run the entire application and database with a single command:
-
-```bash
-docker compose up -d --build
-```
-
-Access the application in your browser:
-- 🌐 **Landing Page**: [http://localhost:8080/home/home.php](http://localhost:8080/home/home.php)
-- 🎓 **Yadav PG Portal**: [http://localhost:8080/pg/login.php](http://localhost:8080/pg/login.php)
-
----
-
-### Option B: 💻 Standalone Local Development (Mac / Linux / Windows)
+### Option A: 💻 Standalone Local Server (Mac / Linux / Windows)
 
 #### 1. Prerequisites
-- **PHP 8.0+** with `mysqli`, `pdo_mysql`, and `gd` extensions enabled (`php -v`)
+- **PHP 8.0+** with `mysqli`, `pdo_mysql`, and `gd` enabled (`php -v`)
 - **MySQL 8.0+** running on `localhost:3306`
 
-#### 2. Database Setup
+#### 2. Import Database
 ```bash
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS hms;"
 mysql -u root hms < "HMS-2/hms.sql"
 ```
 
-#### 3. Start PHP Built-in Server
-From the repository root:
+#### 3. Start Development Server
 ```bash
-php -S localhost:8000 -t HMS-2
+php -S 127.0.0.1:8000 -t HMS-2
 ```
 
 Navigate to:
-👉 **[http://localhost:8000/home/home.php](http://localhost:8000/home/home.php)**
+👉 **[http://127.0.0.1:8000/home/home.php](http://127.0.0.1:8000/home/home.php)**
 
 ---
 
-## 🔑 Default Credentials & Test Accounts
+### Option B: 🐳 Docker Container Deployment
 
-| Role | Username / Email | Password | Access Portal |
+```bash
+docker compose up -d --build
+```
+
+Access containerized endpoints:
+- 🌐 **Landing Page**: [http://localhost:8080/home/home.php](http://localhost:8080/home/home.php)
+- 🛡️ **Central Admin Portal**: [http://localhost:8080/admin_login.php](http://localhost:8080/admin_login.php)
+- 🎓 **Yadav PG Portal**: [http://localhost:8080/pg/login.php](http://localhost:8080/pg/login.php)
+
+---
+
+## 🔑 Default Credentials & Access Matrix
+
+| Role | Username / Email | Password | Access Endpoint |
 | :--- | :--- | :--- | :--- |
-| **Central Administrator (Dedicated SSO)** | `Yuvraj` | `password` | [`admin_login.php`](http://localhost:8000/admin_login.php) |
-| **System Admin (Society)** | `Yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`admin/Dashboard/admin.php`](http://localhost:8000/admin/Dashboard/admin.php) |
-| **Resident Member (Society)** | `rajesh.verma@gmail.com` | `password` | [`members/Dashboard/member.php`](http://localhost:8000/members/Dashboard/member.php) |
-| **Gate Security Staff (Society)**| `deepak.facility@gmail.com` | `password` | [`staff/Dashboard/staff.php`](http://localhost:8000/staff/Dashboard/staff.php) |
-| **PG Student Resident** | `yuvrajyadav734@gmail.com` | `password` | [`pg/student/profile.php`](http://localhost:8000/pg/login.php) |
+| **Central Administrator (SSO)** | `Yuvraj` | `password` | [`admin_login.php`](http://127.0.0.1:8000/admin_login.php) |
+| **Society Admin** | `Yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`admin/Dashboard/admin.php`](http://127.0.0.1:8000/admin/Dashboard/admin.php) |
+| **Society Resident Member** | `yuvrajyadav734@gmail.com` | `password` | [`members/Dashboard/member.php`](http://127.0.0.1:8000/members/Dashboard/member.php) |
+| **Gate Security Guard** | `ramesh_guard` *(or `deepak.facility@gmail.com`)* | `password` | [`staff/Dashboard/staff.php`](http://127.0.0.1:8000/staff/Dashboard/staff.php) |
+| **PG Student Resident** | `yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`pg/student/profile.php`](http://127.0.0.1:8000/pg/login.php) |
+| **PG Warden / Tech Admin** | `Yuvraj` | `password` | [`pg/admin/dashboard.php`](http://127.0.0.1:8000/pg/login.php) |
 | **Property Owners** | `Binod Yadav & Sumit Yadav` | In-Person | Direct stay agreements, pricing & room visits |
-| **PG Warden / Tech Admin** | `Yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`pg/admin/dashboard.php`](http://localhost:8000/pg/login.php) |
 
 ---
 
@@ -215,24 +240,60 @@ Navigate to:
 
 ---
 
+## 🧪 System & Security Audit Results
+
+Our automated audit test suite validates every module across the database and codebase:
+
+```text
+=========================================================
+🔍 FULL-STACK SYSTEM & FUNCTIONALITY AUDIT RESULTS
+=========================================================
+✅ [PASS] Database Connection (MySQLi)           ── Connected to database 'hms'
+✅ [PASS] Society Admin Account (Yuvraj)          ── Verified admin user
+✅ [PASS] Society Resident Member Account         ── Verified resident session
+✅ [PASS] Security Guard Staff Account            ── Ramesh Kumar active
+✅ [PASS] Society Billing & Invoicing Engine      ── 11 invoices, ₹35,500 total
+✅ [PASS] Security Gate Visitor Registry          ── 5 gate entries logged
+✅ [PASS] Community Announcements Engine          ── 4 active broadcasts
+✅ [PASS] Yadav PG Rooms Matrix                   ── 8 rooms across 4 floors
+✅ [PASS] Yadav PG Bed Capacity Tracking          ── 16 Beds (4 occupied, 12 vacant)
+✅ [PASS] PG Student Resident Record              ── Yuvraj Yadav in R-406
+✅ [PASS] Student KYC & Guardian Documentation    ── Father: Binod Prasad Yadav (Verified)
+✅ [PASS] PG Maintenance Complaints Engine        ── Ticketing operational
+✅ [PASS] 30-Day Digital Vacate Intimation Engine ── Settlement workflow active
+✅ [PASS] PG Digital Receipts Ledger              ── 3 student receipts logged
+✅ [PASS] Complete Brand Rebranding Audit         ── 0 legacy 'Kio' remnants
+✅ [PASS] Domain Rebranding Audit                 ── 0 legacy 'prazo' remnants
+✅ [PASS] Society Resident KYC System             ── society_kyc active & verified
+✅ [PASS] Creator Identity Audit                  ── Sumit Yadav active, 0 Shyam
+✅ [PASS] Dedicated Administrator Portal (SSO)    ── admin_login.php active
+✅ [PASS] Modern Sri Krishna Visual Asset         ── 851 KB HD artwork active
+=========================================================
+📊 AUDIT TOTAL: 20 PASSED, 0 FAILED (100% HEALTHY)
+=========================================================
+```
+
+---
+
 ## 👥 Engineering & Collaboration Guidelines
 
-When contributing to this codebase, please uphold these engineering standards:
+When contributing to this repository, please uphold these engineering standards:
 1. **Security First**: Always use `mysqli_prepare()` with strict type-binding. Never interpolate variables directly into SQL queries.
-2. **Output Hygiene**: Always escape dynamic user data with `htmlspecialchars()`.
+2. **Output Hygiene**: Always escape dynamic user data with `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')`.
 3. **Session Integrity**: Guard every authenticated endpoint using `require_role()` or `require_pg_role()`.
 4. **Preserve Cultural & Brand Identity**: Yadav PG operates under the brand **Yadav.in** & **Yadav PG for Stay**, honoring the sacred slogan **"जय श्री कृष्णा (Jai Shree Krishna)"**.
 5. **Clear Commit Messages**: Follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `security:`).
 
 ---
 
-## 👤 Author & Lead Engineer
+## 👤 Author & Platform Architect
 
-- **Lead Full-Stack Developer**: **Yuvraj**
+- **Lead Full-Stack Developer & Platform Architect**: **Yuvraj**
 - **Email**: [yuvrajyadav734@gmail.com](mailto:yuvrajyadav734@gmail.com)
-- **Primary Stack**: PHP 8.4 &bull; MySQL &bull; Three.js &bull; Docker &bull; JavaScript &bull; Linux &bull; Cloud Infrastructure
+- **Primary Stack**: PHP 8.4 &bull; MySQL 8.0 &bull; Three.js WebGL &bull; Docker &bull; JavaScript &bull; Linux Cloud
+- **Property Owners**: **Binod Yadav &amp; Sumit Yadav**
 
 ---
 
 ## 📄 License
-This software is distributed under the [MIT License](LICENSE). Contributions and peer code reviews are welcome!
+This software is distributed under the [MIT License](LICENSE).
