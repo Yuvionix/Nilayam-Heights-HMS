@@ -240,6 +240,97 @@ Access containerized endpoints:
 
 ---
 
+## 🔄 Visual Architecture & Workflow Diagrams (For the Team)
+
+### 1. Dual-Property Multi-Role Operational Flow
+```mermaid
+flowchart TD
+    Public[🌐 Public Visitor / Home Page] --> Portals{Choose Portal}
+    
+    Portals -->|Dedicated Admin SSO| AdminPortal[🛡️ Central Admin Portal admin_login.php]
+    Portals -->|Society Community| SocietyLogin[🏢 Society Portal login.php]
+    Portals -->|Student Accommodation| PGLogin[🎓 Yadav PG Portal pg/login.php]
+    
+    AdminPortal --> SocietyAdmin[🏢 Society Admin Dashboard]
+    AdminPortal --> PGWarden[🎓 Yadav PG Warden Dashboard]
+    AdminPortal --> CrossKYC[🪪 PG Student & Resident KYC Desks]
+    
+    SocietyLogin -->|Apartment Resident| MemberDash[🏠 Resident Dashboard & Bills]
+    SocietyLogin -->|Security Guard| StaffDash[🛡️ Gate Visitor Registry]
+    
+    PGLogin -->|Active Student| StudentProfile[🎓 Student Profile & Payments]
+    
+    subgraph HousingSociety [Nilayam Heights Housing Society]
+        SocietyAdmin
+        MemberDash
+        StaffDash
+    end
+    
+    subgraph ColivingHostel [Yadav PG for Stay - Yadav.in]
+        PGWarden
+        StudentProfile
+    end
+```
+
+### 2. Student Self-Registration & In-Person Bed Allocation Workflow
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Student as 🎓 New Student
+    participant Reg as 📝 pg/register.php
+    participant KYC as 🪪 student/kyc.php
+    participant DB as 💾 MySQL Database
+    actor Warden as 🛡️ Warden / Owners
+    participant Admin as 📋 pg/admin/students.php
+
+    Student->>Reg: Enters Name, Email, Phone, College, Password
+    Note over Student,Reg: No premature bed guessing during signup
+    Reg->>DB: INSERT into pg_students (status: active, bed_id: NULL)
+    Reg->>DB: INSERT into pg_kyc (status: Pending)
+    Reg-->>Student: Auto-login & redirect to kyc.php?new=1
+    
+    Student->>KYC: Fills Guardian Info, Uploads Profile Photo & ID/Address Proofs
+    KYC->>DB: UPDATE pg_kyc & pg_students (photo, address, docs)
+    KYC-->>Student: "KYC Submitted - Under Review"
+    
+    Note over Student,Warden: Student arrives in person for room visit
+    Warden->>Admin: Inspects student photo, contact & submitted documents
+    Warden->>Admin: Selects vacant bed from dropdown & clicks [Assign Bed]
+    Admin->>DB: UPDATE pg_beds (is_occupied=1, student_id) & pg_students (room_id, bed_id)
+    Admin-->>Student: Student Profile updates to Assigned Room & Bed
+```
+
+---
+
+## 🛠️ Developer Runbook & Operations Guide
+
+### A. How to Run the 20-Point Automated Verification Suite
+Whenever code changes or database migrations are made, execute the audit test suite:
+```bash
+php scratch/test_all_features.php
+```
+*Expected Output: `20 PASSED, 0 FAILED` covering MySQL connection, RBAC accounts, KYC schemas, rebranding purity, and visual assets.*
+
+### B. How to Allocate a Bed to a Student
+1. Log in to the Admin Portal at `http://127.0.0.1:8000/admin_login.php` (User: `Yuvraj` / Pass: `password`).
+2. Navigate to **PG Students & KYC** ([`admin/pg_students.php`](http://127.0.0.1:8000/admin/pg_students.php)).
+3. Locate the student showing `Pending Allocation`.
+4. Choose an available bed from the inline dropdown (e.g., `R-102 (Bed B)`) and click **Assign**.
+5. The room and bed occupancy matrices update atomically across the database.
+
+### C. How to Review & Verify Resident KYC
+1. In Society Admin, click **Resident KYC** ([`admin/society_kyc.php`](http://127.0.0.1:8000/admin/society_kyc.php)).
+2. Inspect the resident's profile picture, Flat number, Aadhaar card, and ownership/lease document.
+3. Click **Verify** to grant official verified resident status, or **Reject** with remarks.
+
+### D. How to Export a Clean Database Backup
+```bash
+mysqldump -u root --add-drop-table hms > "HMS-2/hms.sql"
+cp "HMS-2/hms.sql" "hms.sql"
+```
+
+---
+
 ## 🧪 System & Security Audit Results
 
 Our automated audit test suite validates every module across the database and codebase:
