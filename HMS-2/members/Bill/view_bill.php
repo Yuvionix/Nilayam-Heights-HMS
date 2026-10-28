@@ -1,14 +1,42 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+  require_role(array('member', 'admin'), '../../login.php');
+
+$id = 0;
+$member_id = 0;
+$billing_date = date("Y-m");
+$status = 0;
+$total_amount = 0;
+$username = '';
+
 if(isset($_GET['id'])){
-$qry = $con->query("SELECT b.*,m.username from billing b inner join member m on m.id = b.member_id  where b.id= ".$_GET['id']);
-foreach($qry->fetch_array() as $k => $val){
-	$$k=$val;
-}
+	$get_id = (int)$_GET['id'];
+	$stmt = $con->prepare("SELECT b.*, m.username FROM billing b INNER JOIN member m ON m.id = b.member_id WHERE b.id = ?");
+	$stmt->bind_param("i", $get_id);
+	$stmt->execute();
+	$res = $stmt->get_result();
+	if($row = $res->fetch_assoc()){
+		// IDOR check: if member, ensure the bill belongs to them
+		if (isset($_SESSION['account']) && $_SESSION['account'] === 'member') {
+			$my_uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+			if ((int)$row['member_id'] !== $my_uid) {
+				http_response_code(403);
+				echo "<div class='alert alert-danger m-3'>Access Denied: You are not authorized to view this bill.</div>";
+				exit;
+			}
+		}
+		$id = $row['id'];
+		$member_id = $row['member_id'];
+		$billing_date = $row['billing_date'];
+		$status = $row['status'];
+		$total_amount = $row['total_amount'];
+		$username = $row['username'];
+	} else {
+		echo "<div class='alert alert-warning m-3'>Bill not found.</div>";
+		exit;
+	}
+	$stmt->close();
 }
 ?>
 <div class="container-fluid" id="vbill">
@@ -86,7 +114,7 @@ foreach($qry->fetch_array() as $k => $val){
 				<hr>
 			</div>
 			<div class="col-lg-12">
-				<p><b>Member: <?php echo ucwords($username) ?></b></p>
+				<p><b>Member: <?php echo htmlspecialchars(ucwords($username)) ?></b></p>
 				<p><b>Billing Month: <?php echo isset($billing_date) ? date('M, Y',strtotime($billing_date)) : date("M, Y") ?></b></p>
 			</div>
 		<hr>

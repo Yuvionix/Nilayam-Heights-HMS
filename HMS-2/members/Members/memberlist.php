@@ -1,5 +1,7 @@
 <?php 
-
+require_once("../../Includes/config.php"); 
+require_once("../../Includes/session.php"); 
+require_role(array('member', 'admin'), '../../login.php');
 ?>
 
 <div class="container-fluid">
@@ -34,11 +36,11 @@
 				 		<?php echo $i++ ?>
 				 	</td>
 				 	<td>
-				 		<?php echo ucwords($row['email']) ?>
+				 		<?php echo htmlspecialchars(ucwords($row['email'])) ?>
 				 	</td>
 				 	
 				 	<td>
-				 		<?php echo $row['username'] ?>
+				 		<?php echo htmlspecialchars($row['username']) ?>
 				 	</td>
 				 	<!-- <td>
 				 		<center>

@@ -1,9 +1,7 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+  require_role('admin', '../../login.php');
 ?>
 
 <!DOCTYPE html>
@@ -23,12 +21,13 @@
 
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/master_theme.css">
 </head>
 
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="1.png" alt="logo" width="80px" height="80px"></i>
+            <i><img src="logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
@@ -69,13 +68,26 @@
                 </a>
             </li>
 
-            <li>
-                <a href="#">
-                    <i class='bx bx-message'></i>
-                    <span class="links_name">Chat Box</span>
+                        <li>
+                <a href="https://wa.me/918210075922" target="_blank" class="wa-link">
+                    <i class='bx bxl-whatsapp'></i>
+                    <span class="links_name">Sumit (Support)</span>
                 </a>
             </li>
             <li>
+                <a href="https://wa.me/917004936609" target="_blank" class="wa-link">
+                    <i class='bx bxl-whatsapp'></i>
+                    <span class="links_name">Binod (Support)</span>
+                </a>
+            </li>
+                        <li class="ai-agent-nav">
+                <a href="../Chat/ai_assistant.php">
+                    <i class='bx bx-bot'></i>
+                    <span class="links_name">Society AI Agent</span>
+                    <span class="ai-badge">AI</span>
+                </a>
+            </li>
+<li>
                 <a href="../Event_calender/admin_event.php">
                     <i class='bx bx-calendar-event'></i>
                     <span class="links_name">Events</span>

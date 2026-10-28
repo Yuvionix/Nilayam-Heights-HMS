@@ -1,9 +1,7 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+  require_role(array('staff', 'admin'), '../../login.php');
   include('header.php'); 
 ?>
 
@@ -17,7 +15,8 @@
     <link rel="stylesheet" href="staff.css">
     <link rel="stylesheet" href="billing.css">
     <link rel="stylesheet" href="admin_view_mem.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="stylesheet" href="../../css/master_theme.css">
+    <link rel="shortcut icon" href="logo.svg">
 
 
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
@@ -27,15 +26,15 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="1.png"
-                 alt="logo" width="100px" height="100px"></i>
+            <i><img src="logo.svg"
+                 alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
             <li>
-                <a href="../Registry/registry.php" class="active">
+                <a href="staff.php" class="active">
                 <i class='bx bxs-face'></i>
-                    <span class="links_name">Registry</span>
+                    <span class="links_name">Gate Registry</span>
                 </a>
             </li>
             <li class="log_out">
@@ -48,12 +47,32 @@
     </div>
     
     <section class="home-section">
-      
+        <nav>
+            <div class="sidebar-button" style="display: flex; align-items: center; gap: 14px;">
+                <i class='bx bx-menu sidebarBtn'></i>
+                <span class="dashboard">Security & Gate Registry</span>
+                <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);">
+                    <i class='bx bxs-sun' style='color:#f59e0b;'></i> जय श्री कृष्णा
+                </span>
+            </div>
+            
+            <div class="profile-details">
+                <div class="user-avatar-circle">
+                    <?php echo strtoupper(substr(isset($_SESSION["username"]) ? $_SESSION["username"] : 'S', 0, 1)); ?>
+                </div>
+                <span class="admin_name"><?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Staff'; ?> (Security)</span>
+            </div>
+        </nav>
 
-  <div id="view-panel">
-      <?php $page = isset($_GET['page']) ? $_GET['page'] :'registrylist'; ?>
-  	<?php include $page.'.php' ?>
-</div>
+        <div style="padding: 92px 24px 24px 24px;">
+            <div id="view-panel">
+                <?php 
+                    $allowed_pages = array('registrylist', 'manage_user');
+                    $page = isset($_GET['page']) && in_array($_GET['page'], $allowed_pages, true) ? $_GET['page'] : 'registrylist';
+                    include $page . '.php'; 
+                ?>
+            </div>
+        </div>
 
 <div class="modal fade" id="confirm_modal" role='dialog'>
     <div class="modal-dialog modal-md" role="document">
@@ -187,6 +206,18 @@ window._conf = function($msg='',$func='',$params = []){
     placeholder:"Please select here",
     width: "100%"
   })
+
+  let sidebar = document.querySelector(".sidebar");
+  let sidebarBtn = document.querySelector(".sidebarBtn");
+  if (sidebarBtn) {
+    sidebarBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+        if (sidebar.classList.contains("active")) {
+            sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else
+            sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+    };
+  }
 </script>	
 
 </body>

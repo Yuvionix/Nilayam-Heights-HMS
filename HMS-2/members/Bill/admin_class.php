@@ -1,93 +1,67 @@
 <?php 
-  require_once("../../Includes/config.php"); 
-  require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+require_once("../../Includes/config.php"); 
+require_once("../../Includes/session.php"); 
+
+require_role(array('member', 'admin'), '../../login.php');
+
 Class Action {
 	private $db;
 
 	public function __construct() {
 		ob_start();
-   	include '../../Includes/config.php';
-    
-    $this->db = $con;
+		global $con;
+		$this->db = $con;
 	}
+
 	function __destruct() {
-	    $this->db->close();
 	    ob_end_flush();
 	}
 
-
 	function save_billing(){
-		extract($_POST);
-		$data = " member_id = $member_id ";
-		$billing_date = $billing_date.'-01';
-		$data .= ", billing_date = '$billing_date' ";
-		$data .= ", total_amount = '$o_amount' ";
-		
-
-		if(empty($id)){
-			$save = $this->db->query("INSERT INTO billing set ".$data);
-			
-			if($save){
-				$id = $this->db->insert_id;
-				foreach($amount as $k => $v){
-					$data=" billing_id = $id ";
-					$data.=", type = '$k' ";
-					$data.=", amount = '$v' ";
-					$data.=", rate = '$rate[$k]' ";
-					if(isset($consumption[$k]))
-					$data.=", consumption = '$consumption[$k]' ";
-					if(isset($reading[$k]))
-					$data.=", reading = '$reading[$k]' ";
-					if(isset($previous_amount[$k]))
-					$data.=", previous_amount = '$previous_amount[$k]' ";
-					if(isset($previous_consumption[$k]))
-					$data.=", previous_consumption = '$previous_consumption[$k]' ";
-					if(isset($previous_reading[$k]))
-					$data.=", previous_reading = '$previous_reading[$k]' ";
-					$ins[] = $this->db->query("INSERT INTO bills set ".$data);
-				}
-				return json_encode(array("status"=>1,"id"=>$id));
-			}
-		}else{
-			$save = $this->db->query("UPDATE billing set ".$data." where id=".$id);
-			if($save){
-				foreach($amount as $k => $v){
-					$data =" amount = '$v' ";
-					$data.=", rate = '$rate[$k]' ";
-					if(isset($consumption[$k]))
-					$data.=", consumption = '$consumption[$k]' ";
-					if(isset($reading[$k]))
-					$data.=", reading = '$reading[$k]' ";
-					if(isset($previous_amount[$k]))
-					$data.=", previous_amount = '$previous_amount[$k]' ";
-					if(isset($previous_consumption[$k]))
-					$data.=", previous_consumption = '$previous_consumption[$k]' ";
-					if(isset($previous_reading[$k]))
-					$data.=", previous_reading = '$previous_reading[$k]' ";
-					$ins[] = $this->db->query("UPDATE bills set ".$data." where type='$k' and billing_id = '$id' ");
-				}
-				return json_encode(array("status"=>1,"id"=>$id));
-			}
+		// Members are not allowed to create or edit billing structures
+		if (!isset($_SESSION['account']) || $_SESSION['account'] !== 'admin') {
+			return json_encode(array("status" => 0, "error" => "Permission denied"));
 		}
+		return json_encode(array("status" => 0));
 	}
+
 	function delete_billing(){
-		extract($_POST);
-		$delete = $this->db->query("DELETE FROM billing where id = ".$id);
-		$delete2 = $this->db->query("DELETE FROM bills where billing_id = ".$id);
-		if($delete && $delete2){
+		// Members are not allowed to delete bills
+		if (!isset($_SESSION['account']) || $_SESSION['account'] !== 'admin') {
+			return 0;
+		}
+		return 0;
+	}
+
+	function save_payment(){
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		$amount_payed = isset($_POST['amount_payed']) ? (float)$_POST['amount_payed'] : 0.0;
+		$amount_change = isset($_POST['amount_change']) ? (float)$_POST['amount_change'] : 0.0;
+
+		if ($id > 0) {
+			// If logged in as member, verify this bill belongs to the logged in member
+			if ($_SESSION['account'] === 'member') {
+				$my_uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+				$chk = $this->db->prepare("SELECT id FROM billing WHERE id = ? AND member_id = ?");
+				$chk->bind_param("ii", $id, $my_uid);
+				$chk->execute();
+				$chk->store_result();
+				if ($chk->num_rows === 0) {
+					$chk->close();
+					return 0; // Unauthorized bill payment attempt
+				}
+				$chk->close();
+			}
+
+			$stmt = $this->db->prepare("UPDATE billing SET amount_payed = ?, amount_change = ?, status = 1 WHERE id = ?");
+			$stmt->bind_param("ddi", $amount_payed, $amount_change, $id);
+			$save = $stmt->execute();
+			$stmt->close();
+			if ($save) {
 				return 1;
 			}
-	}
-	function save_payment(){
-		extract($_POST);
-		$data = " amount_payed = '$amount_payed' ";
-		$data .= ", amount_change = '$amount_change' ";
-		$data .= ", status = 1 ";
-		$save = $this->db->query("UPDATE billing set $data where id = $id ");
-		if($save)
-		return 1;
+		}
+		return 0;
 	}
 }
+?>

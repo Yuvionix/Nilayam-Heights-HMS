@@ -1,47 +1,66 @@
 <?php
 require_once("../../Includes/config.php"); 
 require_once("../../Includes/session.php"); 
-if ($logged==false) {
-	 header("Location:../../login.php");
-}
-ini_set('display_errors', 1);
+
+require_role(array('staff', 'admin'), '../../login.php');
+
 Class Action {
 	private $db;
 
 	public function __construct() {
 		ob_start();
-   	include ("../../Includes/config.php"); 
-    
-    $this->db = $con;
+		global $con;
+		$this->db = $con;
 	}
+
 	function __destruct() {
-	    $this->db->close();
 	    ob_end_flush();
 	}
 
-	
-
 	function save_user(){
-		extract($_POST);
-		$data .= ", person_name = '$person_name' ";
-		$chk = $this->db->query("Select * from registry where person_name = '$person_name' and id !='$id' ")->num_rows;
-		if($chk > 0){
+		$id = !empty($_POST['id']) ? (int)$_POST['id'] : 0;
+		$person_name = trim(isset($_POST['person_name']) ? $_POST['person_name'] : '');
+
+		if (empty($person_name)) {
+			return 0;
+		}
+
+		$stmt_chk = $this->db->prepare("SELECT id FROM registry WHERE person_name = ? AND id != ?");
+		$stmt_chk->bind_param("si", $person_name, $id);
+		$stmt_chk->execute();
+		$stmt_chk->store_result();
+		if ($stmt_chk->num_rows > 0) {
+			$stmt_chk->close();
 			return 2;
-			exit;
 		}
-		if(empty($id)){
-			$save = $this->db->query("INSERT INTO registry set ".$data);
-		}else{
-			$save = $this->db->query("UPDATE registry set ".$data." where id = ".$id);
+		$stmt_chk->close();
+
+		if ($id === 0) {
+			$stmt = $this->db->prepare("INSERT INTO registry (person_name, created_at) VALUES (?, NOW())");
+			$stmt->bind_param("s", $person_name);
+			$save = $stmt->execute();
+			$stmt->close();
+			if ($save) return 1;
+		} else {
+			$stmt = $this->db->prepare("UPDATE registry SET person_name = ? WHERE id = ?");
+			$stmt->bind_param("si", $person_name, $id);
+			$save = $stmt->execute();
+			$stmt->close();
+			if ($save) return 1;
 		}
-		if($save){
-			return 1;
-		}
+		return 0;
 	}
+
 	function delete_user(){
-		extract($_POST);
-		$delete = $this->db->query("DELETE FROM registry where id = ".$id);
-		if($delete)
-			return 1;
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		if ($id > 0) {
+			$stmt = $this->db->prepare("DELETE FROM registry WHERE id = ?");
+			$stmt->bind_param("i", $id);
+			$delete = $stmt->execute();
+			$stmt->close();
+			if ($delete) return 1;
+		}
+		return 0;
 	}									
 }
+?>

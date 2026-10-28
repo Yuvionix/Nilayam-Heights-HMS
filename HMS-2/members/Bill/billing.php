@@ -1,5 +1,7 @@
 <?php 
   require_once("../../Includes/config.php"); 
+  require_once("../../Includes/session.php"); 
+  require_role(array('member', 'admin'), '../../login.php');
 ?>
 <body>
 
@@ -71,10 +73,20 @@
 							<tbody>
 								<?php 
 								$i = 1;
-								$month = isset($_GET['month']) ? date('Y-m',strtotime($_GET['month'].'-01')) : date('Y-m') ;
-								$billing = $con->query("SELECT b.*,m.username from billing b inner join member m on m.id = b.member_id where date_format(b.billing_date,'%Y-%m') = '$month' order by b.id asc");
-									while($row=$billing->fetch_assoc()):
-									$chk =  $con->query("SELECT b.*,m.username from billing b inner join member m on m.id = b.member_id where date(b.billing_date) > '".$month."-01' and b.id != '".$row['id']."' and b.member_id = '".$row['member_id']."' order by date(b.billing_date) asc")->num_rows;
+								$month = isset($_GET['month']) && preg_match('/^\d{4}-\d{2}$/', $_GET['month']) ? $_GET['month'] : date('Y-m');
+								$user_role = isset($_SESSION['account']) ? $_SESSION['account'] : 'member';
+								$my_uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0;
+
+								if ($user_role === 'admin') {
+									$stmt_b = $con->prepare("SELECT b.*, m.username FROM billing b INNER JOIN member m ON m.id = b.member_id WHERE date_format(b.billing_date,'%Y-%m') = ? ORDER BY b.id ASC");
+									$stmt_b->bind_param("s", $month);
+								} else {
+									$stmt_b = $con->prepare("SELECT b.*, m.username FROM billing b INNER JOIN member m ON m.id = b.member_id WHERE b.member_id = ? AND date_format(b.billing_date,'%Y-%m') = ? ORDER BY b.id ASC");
+									$stmt_b->bind_param("is", $my_uid, $month);
+								}
+								$stmt_b->execute();
+								$billing = $stmt_b->get_result();
+									while($row = $billing->fetch_assoc()):
 								?>
 								<tr>
 									
@@ -83,7 +95,7 @@
 										 <p> <b><?php echo date("M, Y",strtotime($row['billing_date'])) ?></b></p>
 									</td>
 									<td class="">
-										 <p> Member Name: <b><?php echo ucwords($row['username']) ?></b></p>
+										 <p> Member Name: <b><?php echo htmlspecialchars(ucwords($row['username'])) ?></b></p>
 										
 									</td>
 									<td class="">
@@ -97,14 +109,12 @@
 										<?php endif; ?>
 									</td>
 									<td class="text-center">
-										<button class="btn btn-sm btn-outline-primary view_billing" type="button" data-id="<?php echo $row['id'] ?>" >View</button>
-										<!-- <?php if($chk <= 0): ?> 
-											<button class="btn btn-sm btn-outline-primary edit_billing" type="button" data-id="<?php echo $row['id'] ?>" >Edit</button>
-											<button class="btn btn-sm btn-outline-danger delete_billing" type="button" data-id="<?php echo $row['id'] ?>">Delete</button>
-										<?php endif; ?> -->
+										<button class="btn btn-sm btn-outline-primary view_billing" type="button" data-id="<?php echo (int)$row['id'] ?>" >View</button>
 									</td>
 								</tr>
-								<?php endwhile; ?>
+								<?php endwhile; 
+								$stmt_b->close();
+								?>
 							</tbody>
 						</table>
 					</div>

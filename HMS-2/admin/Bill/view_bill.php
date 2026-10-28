@@ -1,14 +1,30 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+  require_role('admin', '../../login.php');
+
+$id = 0;
+$member_id = 0;
+$billing_date = date("Y-m");
+$status = 0;
+$total_amount = 0;
+$username = '';
+
 if(isset($_GET['id'])){
-$qry = $con->query("SELECT b.*,m.username from billing b inner join member m on m.id = b.member_id  where b.id= ".$_GET['id']);
-foreach($qry->fetch_array() as $k => $val){
-	$$k=$val;
-}
+	$get_id = (int)$_GET['id'];
+	$stmt = $con->prepare("SELECT b.*, m.username FROM billing b INNER JOIN member m ON m.id = b.member_id WHERE b.id = ?");
+	$stmt->bind_param("i", $get_id);
+	$stmt->execute();
+	$res = $stmt->get_result();
+	if($row = $res->fetch_assoc()){
+		$id = $row['id'];
+		$member_id = $row['member_id'];
+		$billing_date = $row['billing_date'];
+		$status = $row['status'];
+		$total_amount = $row['total_amount'];
+		$username = $row['username'];
+	}
+	$stmt->close();
 }
 ?>
 <div class="container-fluid" id="vbill">
@@ -86,7 +102,7 @@ foreach($qry->fetch_array() as $k => $val){
 				<hr>
 			</div>
 			<div class="col-lg-12">
-				<p><b>Member: <?php echo ucwords($username) ?></b></p>
+				<p><b>Member: <?php echo htmlspecialchars(ucwords($username)) ?></b></p>
 				<p><b>Billing Month: <?php echo isset($billing_date) ? date('M, Y',strtotime($billing_date)) : date("M, Y") ?></b></p>
 			</div>
 		<hr>

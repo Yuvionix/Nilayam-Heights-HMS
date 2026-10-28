@@ -1,21 +1,30 @@
 <?php 
-include("../../Includes/config.php"); 
-session_start();
+require_once("../../Includes/config.php"); 
+require_once("../../Includes/session.php"); 
+
+require_role(array('staff', 'admin'), '../../login.php');
+
+$meta = array();
 if(isset($_GET['id'])){
-$registry = $con->query("SELECT * FROM registry where id =".$_GET['id']);
-foreach($registry->fetch_array() as $k =>$v){
-	$meta[$k] = $v;
-}
+	$get_id = (int)$_GET['id'];
+	$stmt = $con->prepare("SELECT * FROM registry WHERE id = ?");
+	$stmt->bind_param("i", $get_id);
+	$stmt->execute();
+	$res = $stmt->get_result();
+	if($row = $res->fetch_assoc()){
+		$meta = $row;
+	}
+	$stmt->close();
 }
 ?>
 <div class="container-fluid">
 	<div id="msg"></div>
 	
 	<form action="" id="manage-user">	
-		<input type="hidden" name="id" value="<?php echo isset($meta['id']) ? $meta['id']: '' ?>">
+		<input type="hidden" name="id" value="<?php echo htmlspecialchars(isset($meta['id']) ? $meta['id']: '') ?>">
 		<div class="form-group">
 			<label for="person_name">Person Name</label>
-			<input type="text" name="person_name" id="person_name" class="form-control" value="<?php echo isset($meta['person_name']) ? $meta['person_name']: '' ?>" required  autocomplete="off">
+			<input type="text" name="person_name" id="person_name" class="form-control" value="<?php echo htmlspecialchars(isset($meta['person_name']) ? $meta['person_name']: '') ?>" required autocomplete="off">
 		</div>
 	</form>
 </div>
@@ -33,16 +42,18 @@ foreach($registry->fetch_array() as $k =>$v){
 			method:'POST',
 			data:$(this).serialize(),
 			success:function(resp){
-				if(resp ==1){
+				if(resp == 1){
 					alert_toast("Data successfully saved",'success')
 					setTimeout(function(){
 						location.reload()
 					},1500)
+				} else if(resp == 2){
+					$('#msg').html('<div class="alert alert-danger">Person name already logged.</div>')
+					end_load()
+				} else {
+					$('#msg').html('<div class="alert alert-danger">An error occurred while saving.</div>')
+					end_load()
 				}
-				// else{
-				// 	$('#msg').html('<div class="alert alert-danger">Username already exist</div>')
-				// 	end_load()
-				// }
 			}
 		})
 	})	

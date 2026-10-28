@@ -1,35 +1,106 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
+  require_role('admin', '../../login.php');
 ?>
-
 <!DOCTYPE html>
-
 <html lang="en" dir="ltr">
-
 <head>
     <meta charset="UTF-8">
-
+    <title>Neighbourhood & Map Directory | Nilayam Heights HMS</title>
     <link rel="stylesheet" href="admin_neigh.css">
+    <link rel="stylesheet" href="../../css/master_theme.css">
     <link rel="shortcut icon" href="Logo3.jpg">
-
-
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .loca-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+            gap: 24px;
+        }
+        .place-card {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .place-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+            border-color: #cbd5e1;
+        }
+        .map-iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background: #f1f5f9;
+        }
+        .map-iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .place-info {
+            padding: 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .place-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .tag-society { background: #e0e7ff; color: #4338ca; }
+        .tag-edu { background: #fef3c7; color: #b45309; }
+        .tag-police { background: #fee2e2; color: #b91c1c; }
+        .tag-hospital { background: #dcfce7; color: #15803d; }
+        .tag-spiritual { background: #f3e8ff; color: #7e22ce; }
+        .place-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .place-address {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+        .place-footer {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="1.png" alt="logo" width="100px" height="100px"></i>
+            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
             <li>
-                <a href="../Dashboard/admin.php" >
+                <a href="../Dashboard/admin.php">
                     <i class='bx bx-grid-alt'></i>
                     <span class="links_name">Dashboard</span>
                 </a>
@@ -53,8 +124,8 @@
                 </a>
             </li>
             <li>
-                <a href="../Neighbourhood/admin_neigh.php" class="active">
-                    <i class='bx bx-map' ></i>
+                <a href="admin_neigh.php" class="active">
+                    <i class='bx bx-map'></i>
                     <span class="links_name">Neighbourhood</span>
                 </a>
             </li>
@@ -70,11 +141,11 @@
                     <span class="links_name">Staff</span>
                 </a>
             </li>
-
-            <li>
-                <a href="https://discord.gg/ytmJWCjyHZ" target="_blank">
-                    <i class='bx bx-message'></i>
-                    <span class="links_name">Chat Box</span>
+            <li class="ai-agent-nav">
+                <a href="../Chat/ai_assistant.php">
+                    <i class='bx bx-bot'></i>
+                    <span class="links_name">Society AI Agent</span>
+                    <span class="ai-badge">AI</span>
                 </a>
             </li>
             <li>
@@ -82,8 +153,6 @@
                     <i class='bx bx-calendar-event'></i>
                     <span class="links_name">Events</span>
                 </a>
-            </li>
-            <li>
             </li>
             <li class="log_out">
                 <a href="../../logout.php">
@@ -93,94 +162,140 @@
             </li>
         </ul>
     </div>
+
     <section class="home-section">
         <nav>
             <div class="sidebar-button">
                 <i class='bx bx-menu sidebarBtn'></i>
-                <span class="neighbourhood">Neighbourhood</span>
+                <span class="neighbourhood">Deoghar Neighbourhood Directory</span>
             </div>
            
             <div class="profile-details">
-                <!--<img src="images/profile.jpg" alt="">-->
-                <span class="admin_name"><?php echo $_SESSION["username"]; ?></span>
-                <i class='bx bx-chevron-down'></i>
+                <div class="user-avatar-circle">
+                    <?php echo strtoupper(substr(isset($_SESSION["username"]) ? $_SESSION["username"] : 'Y', 0, 1)); ?>
+                </div>
+                <span class="admin_name"><?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Yuvraj'; ?> (Admin)</span>
             </div>
         </nav>
-        <div class="home-content">
-        
-            <div class="loca-box">
-                <div class="loca-cat">
 
-                    <div class="tittle">Police Station</div>
-                    <div class="content" >
-                        <div class="inner-content">
-    
-                            <div class="map-box" >
-                                <iframe class="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1496.3102563659031!2d72.89977874554533!3d19.087250262818674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c7cfaaaaaaab%3A0x8ca54201c627f62a!2sGhatkopar%20Police%20Station!5e0!3m2!1sen!2sin!4v1645372837936!5m2!1sen!2sin" 
-                                 allowfullscreen="" loading="lazy"></iframe>
-                            </div>
-                            <div class="info-box">
-                                <h3>Ghatkopar Police Station</h3>
-                                <p>Lal Bahadur Shastri Rd, 
-                                    Chirag Nagar, Ghatkopar West, Mumbai,
-                                     Maharashtra 400086</p>
-                                <p>Contact: +912225153543</p>
-        
-                            </div>
+        <div class="home-content" style="padding: 92px 28px 28px 28px;">
+            <div style="margin-bottom: 24px;">
+                <h2 style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Nearby Places & Interactive Location Maps</h2>
+                <p style="font-size: 14px; color: #64748b; margin: 0;">Verified community landmarks, academic institutions, security outposts, and emergency healthcare in Satsang Nagar, Deoghar</p>
+            </div>
+
+            <div class="loca-grid">
+                <!-- 1. Society Location (Hirna Road) -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=Hirna+Road,+Satsang+Nagar,+Deoghar,+Jharkhand+814142&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                    </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-society"><i class='bx bx-home-alt'></i> Society Main Gate</span>
+                            <h3 class="place-title">Nilayam Heights Housing Society</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#4f46e5;"></i>
+                                <b>Hirna Road, Satsang Nagar, Deoghar, Jharkhand 814142</b><br>
+                                Primary residential campus with 24/7 security gate, multi-tier visitor parking, and administration office.
+                            </p>
                         </div>
-                        
+                        <div class="place-footer">
+                            <span style="color:#059669;font-weight:600;"><i class='bx bx-check-shield'></i> 24x7 Guard Post</span>
+                            <a href="https://maps.google.com/?q=Hirna+Road,+Satsang+Nagar,+Deoghar,+Jharkhand+814142" target="_blank" class="btn btn-outline-primary btn-sm">Open in Maps</a>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="loca-cat">
 
-                    <div class="tittle">Hospitals</div>
-                    <div class="content" >
-                        <div class="inner-content">
-    
-                            <div class="map-box" >
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15081.842968485133!2d72.90005300000003!3d19.08743300000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c62ad34684d9%3A0x8824f166044b07e5!2sNulife%20Hospital!5e0!3m2!1sen!2sin!4v1645374777817!5m2!1sen!2sin" 
-                                 allowfullscreen="" loading="lazy"></iframe>
-                            </div>
-                            <div class="info-box">
-                                <h3>Nulife Hospital</h3>
-                                <p>Nulife Hospital
-                                    A1, Harekrishna Building, 1st Floor Near Telephone Exchange,
-                                     A1, Harekrishna Bldg, Lal Bahadur Shastri Rd, Jivdaya Lane,
-                                     Ghatkopar West, Mumbai, Maharashtra 400086</p>
-                                <p>Contact: +912225093630</p>
-                                
-        
-                            </div>
-                        </div>
-                        
+                <!-- 2. Academic & AS College Road Location -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=AS+College+Rd,+Satsang+Nagar,+Deoghar,+Jharkhand+814116&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
                     </div>
-                    
-                    <div class="content" >
-                        <div class="inner-content">
-    
-                            <div class="map-box" >
-                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7540.977695828477!2d72.89999572805982!3d19.086212393161293!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c7a7a74ac869%3A0xf253f2ea7466b26a!2sZynova%20Shalby%20Hospital!5e0!3m2!1sen!2sin!4v1645375376997!5m2!1sen!2sin"
-                                  style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                            </div>
-                            <div class="info-box">
-                                <h3>Zynova Shalby Hospital</h3>
-                                <p>Acme Elanza, 1900, 1917,
-                                     Ghatkopar West, Maharashtra 400086</p>
-                                <p>Contact: +912268900001</p>
-        
-                            </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-edu"><i class='bx bx-book-open'></i> College & North Wing Gate</span>
+                            <h3 class="place-title">A. S. College, Deoghar</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#b45309;"></i>
+                                <b>AS College Rd, Satsang Nagar, Deoghar, Jharkhand 814116</b><br>
+                                Premier constituent autonomous college. Direct pedestrian access from our society's North Wing gate.
+                            </p>
                         </div>
-                        
+                        <div class="place-footer">
+                            <span style="color:#475569;"><i class='bx bx-phone'></i> +91 6432 222452</span>
+                            <a href="https://maps.google.com/?q=AS+College+Rd,+Satsang+Nagar,+Deoghar,+Jharkhand+814116" target="_blank" class="btn btn-outline-primary btn-sm">Open in Maps</a>
+                        </div>
                     </div>
                 </div>
-                
-                
+
+                <!-- 3. Local Police Station & Security Outpost -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=Satsang+Nagar+Police+Chowki+Deoghar+Jharkhand+814142&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                    </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-police"><i class='bx bx-shield-quarter'></i> Law Enforcement</span>
+                            <h3 class="place-title">Satsang Nagar Police Outpost & Town PS</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#dc2626;"></i>
+                                <b>Near Satsang Ashram, Satsang Nagar, Deoghar, Jharkhand 814142</b><br>
+                                Designated jurisdiction police chowki providing 24x7 night patrol along Hirna Road and AS College Road.
+                            </p>
+                        </div>
+                        <div class="place-footer">
+                            <span style="color:#dc2626;font-weight:700;"><i class='bx bx-phone-call'></i> Emergency: 112 / +91 6432 222201</span>
+                            <a href="https://maps.google.com/?q=Satsang+Nagar+Deoghar+Jharkhand" target="_blank" class="btn btn-outline-primary btn-sm">Directions</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Hospitals & Healthcare -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=AIIMS+Deoghar+Jharkhand&t=&z=14&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                    </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-hospital"><i class='bx bx-plus-medical'></i> Emergency Care</span>
+                            <h3 class="place-title">AIIMS Deoghar & Sadar Hospital</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#15803d;"></i>
+                                <b>Castairs Town & AIIMS Campus, Deoghar, Jharkhand 814142</b><br>
+                                State-of-the-art super-speciality medical institute and 24x7 trauma & ambulance emergency care.
+                            </p>
+                        </div>
+                        <div class="place-footer">
+                            <span style="color:#15803d;font-weight:700;"><i class='bx bx-phone-call'></i> Ambulance: 108 / +91 6432 232750</span>
+                            <a href="https://maps.google.com/?q=AIIMS+Deoghar" target="_blank" class="btn btn-outline-primary btn-sm">Emergency Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Cultural Landmark (Satsang Ashram) -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=Satsang+Ashram+Deoghar+Jharkhand+814142&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                    </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-spiritual"><i class='bx bx-building'></i> Spiritual Landmark</span>
+                            <h3 class="place-title">Sri Sri Thakur Anukulchandra Satsang Ashram</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#7e22ce;"></i>
+                                <b>Satsang Nagar, Deoghar, Jharkhand 814142</b><br>
+                                Historic world-renowned spiritual center with philanthropic medical center, botanical gardens, and community kitchen.
+                            </p>
+                        </div>
+                        <div class="place-footer">
+                            <span style="color:#475569;"><i class='bx bx-time'></i> Visiting Hours: 06:00 AM – 08:30 PM</span>
+                            <a href="https://maps.google.com/?q=Satsang+Ashram+Deoghar" target="_blank" class="btn btn-outline-primary btn-sm">View Location</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-
-        
     </section>
 
     <script>
@@ -194,7 +309,5 @@
                 sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
         }
     </script>
-
 </body>
-
 </html>

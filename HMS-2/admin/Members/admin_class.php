@@ -1,50 +1,76 @@
 <?php
 require_once("../../Includes/config.php"); 
 require_once("../../Includes/session.php"); 
-if ($logged==false) {
-	 header("Location:../../login.php");
-}
-ini_set('display_errors', 1);
+
+require_role('admin', '../../login.php');
+
 Class Action {
 	private $db;
 
 	public function __construct() {
 		ob_start();
-   	include ("../../Includes/config.php"); 
-    
-    $this->db = $con;
+		global $con;
+		$this->db = $con;
 	}
+
 	function __destruct() {
-	    $this->db->close();
 	    ob_end_flush();
 	}
 
-	
-
 	function save_user(){
-		extract($_POST);
-		$data = " email = '$email' ";
-		$data .= ", username = '$username' ";
-		if(!empty($password))
-		$data .= ", password = '($password)' ";
-		$chk = $this->db->query("Select * from member where username = '$username' and id !='$id' ")->num_rows;
-		if($chk > 0){
+		$id = !empty($_POST['id']) ? (int)$_POST['id'] : 0;
+		$username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+		$email = trim(isset($_POST['email']) ? $_POST['email'] : '');
+		$password = isset($_POST['password']) ? $_POST['password'] : '';
+
+		if (empty($username) || empty($email)) {
+			return 0;
+		}
+
+		// Check for duplicate username with prepared statement
+		$stmt_chk = $this->db->prepare("SELECT id FROM member WHERE username = ? AND id != ?");
+		$stmt_chk->bind_param("si", $username, $id);
+		$stmt_chk->execute();
+		$stmt_chk->store_result();
+		if ($stmt_chk->num_rows > 0) {
+			$stmt_chk->close();
 			return 2;
-			exit;
 		}
-		if(empty($id)){
-			$save = $this->db->query("INSERT INTO member set ".$data);
-		}else{
-			$save = $this->db->query("UPDATE member set ".$data." where id = ".$id);
+		$stmt_chk->close();
+
+		if ($id === 0) {
+			$hash = password_hash(!empty($password) ? $password : 'password', PASSWORD_DEFAULT);
+			$stmt = $this->db->prepare("INSERT INTO member (email, username, password) VALUES (?, ?, ?)");
+			$stmt->bind_param("sss", $email, $username, $hash);
+			$save = $stmt->execute();
+			$stmt->close();
+			if ($save) return 1;
+		} else {
+			if (!empty($password)) {
+				$hash = password_hash($password, PASSWORD_DEFAULT);
+				$stmt = $this->db->prepare("UPDATE member SET email = ?, username = ?, password = ? WHERE id = ?");
+				$stmt->bind_param("sssi", $email, $username, $hash, $id);
+			} else {
+				$stmt = $this->db->prepare("UPDATE member SET email = ?, username = ? WHERE id = ?");
+				$stmt->bind_param("ssi", $email, $username, $id);
+			}
+			$save = $stmt->execute();
+			$stmt->close();
+			if ($save) return 1;
 		}
-		if($save){
-			return 1;
-		}
+		return 0;
 	}
+
 	function delete_user(){
-		extract($_POST);
-		$delete = $this->db->query("DELETE FROM member where id = ".$id);
-		if($delete)
-			return 1;
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		if ($id > 0) {
+			$stmt = $this->db->prepare("DELETE FROM member WHERE id = ?");
+			$stmt->bind_param("i", $id);
+			$delete = $stmt->execute();
+			$stmt->close();
+			if ($delete) return 1;
+		}
+		return 0;
 	}									
 }
+?>

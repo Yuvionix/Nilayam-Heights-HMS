@@ -1,5 +1,7 @@
 <?php 
-
+require_once("../../Includes/config.php"); 
+require_once("../../Includes/session.php"); 
+require_role(array('staff', 'admin'), '../../login.php');
 ?>
 
 <div class="container-fluid">
@@ -34,11 +36,11 @@
 				 		<?php echo $i++ ?>
 				 	</td>
 				 	<td>
-				 		<?php echo ucwords($row['created_at']) ?>
+				 		<?php echo htmlspecialchars(ucwords($row['created_at'])) ?>
 				 	</td>
 				 	
 				 	<td>
-				 		<?php echo $row['person_name'] ?>
+				 		<?php echo htmlspecialchars($row['person_name']) ?>
 				 	</td>
 				 	<td>
 				 		<center>
@@ -48,9 +50,9 @@
 								    <span class="sr-only">Toggle Dropdown</span>
 								  </button>
 								  <div class="dropdown-menu">
-								    <a class="dropdown-item edit_user" href="javascript:void(0)" data-id = '<?php echo $row['id'] ?>'>Edit</a>
+								    <a class="dropdown-item edit_user" href="javascript:void(0)" data-id = '<?php echo (int)$row['id'] ?>'>Edit</a>
 								    <div class="dropdown-divider"></div>
-								    <a class="dropdown-item delete_user" href="javascript:void(0)" data-id = '<?php echo $row['id'] ?>'>Delete</a>
+								    <a class="dropdown-item delete_user" href="javascript:void(0)" data-id = '<?php echo (int)$row['id'] ?>'>Delete</a>
 								  </div>
 								</div>
 								</center>

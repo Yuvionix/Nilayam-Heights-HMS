@@ -1,58 +1,81 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
-  if ($logged==false) {
-       header("Location:../../login.php");
-  }
-extract($_POST);
-$date = $date.'-01';
-$chk = $con->query("SELECT * from billing where member_id = $id and date_format(billing_date,'%Y-%m') = '".date("Y-m",strtotime($date))."'")->num_rows;
-if($chk > 0 && !isset($bid)){
-	echo "<div class='container-fluid'><center><h3><b>Member's Bill already exist for the selected Month.</b></h3></center></div>";
+  require_role('admin', '../../login.php');
+
+$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$date_input = isset($_POST['date']) && preg_match('/^\d{4}-\d{2}$/', $_POST['date']) ? $_POST['date'] : date('Y-m');
+$date = $date_input . '-01';
+$month_format = date("Y-m", strtotime($date));
+$bid = isset($_POST['bid']) && !empty($_POST['bid']) ? (int)$_POST['bid'] : null;
+
+$stmt_chk = $con->prepare("SELECT id FROM billing WHERE member_id = ? AND date_format(billing_date, '%Y-%m') = ?");
+$stmt_chk->bind_param("is", $id, $month_format);
+$stmt_chk->execute();
+$stmt_chk->store_result();
+$chk = $stmt_chk->num_rows;
+$stmt_chk->close();
+
+if($chk > 0 && empty($bid)){
+	echo "<div class='container-fluid'><center><h3><b>Member's Bill already exists for the selected Month.</b></h3></center></div>";
 	exit;
 }
-$query = $con->query("SELECT * FROM member where id=".$id)->fetch_array();
-foreach($query as $k => $v){
-	$$k = $v;
-}
-$monthly_rent = 0;
 
-$billing = $con->query("SELECT * from billing where member_id = $id and date(billing_date) < '".date("Y-m-d",strtotime($date))."' order by date(billing_date) desc limit 1");
-if($billing->num_rows > 0){
-	$result =$billing->fetch_array(); 
-$pdate = $result['billing_date'];
-$previous = $con->query("SELECT * from bills where billing_id = ".$result['id']);
-if($previous->num_rows > 0){
-	while($row=$previous->fetch_assoc()){
+$monthly_rent = 0;
+$prev = array();
+$pdate = null;
+
+$stmt_prev_b = $con->prepare("SELECT * FROM billing WHERE member_id = ? AND date(billing_date) < ? ORDER BY date(billing_date) DESC LIMIT 1");
+$stmt_prev_b->bind_param("is", $id, $date);
+$stmt_prev_b->execute();
+$billing_res = $stmt_prev_b->get_result();
+
+if($billing_res->num_rows > 0){
+	$result = $billing_res->fetch_assoc(); 
+	$pdate = $result['billing_date'];
+	$prev_id = (int)$result['id'];
+
+	$stmt_pbills = $con->prepare("SELECT * FROM bills WHERE billing_id = ?");
+	$stmt_pbills->bind_param("i", $prev_id);
+	$stmt_pbills->execute();
+	$prev_res = $stmt_pbills->get_result();
+	while($row = $prev_res->fetch_assoc()){
 		$prev[$row['type']] = $row;
 		if($row['type'] == 2)
-			$sys_e_rate = $row['rate'];
+			$sys_e_rate = (float)$row['rate'];
 		if($row['type'] == 3)
-			$sys_w_rate = $row['rate'];
-		
+			$sys_w_rate = (float)$row['rate'];
 	}
+	$stmt_pbills->close();
 }
+$stmt_prev_b->close();
+
+if(!empty($bid)){
+	$stmt_erate = $con->prepare("SELECT * FROM bills WHERE billing_id = ? AND type = 2");
+	$stmt_erate->bind_param("i", $bid);
+	$stmt_erate->execute();
+	$erate_res = $stmt_erate->get_result();
+	if($erate_res->num_rows > 0){
+		$er = $erate_res->fetch_assoc();
+		$sys_e_rate = (float)$er['rate'];
+		$econs = (int)$er['consumption'];
+	}
+	$stmt_erate->close();
+
+	$stmt_wrate = $con->prepare("SELECT * FROM bills WHERE billing_id = ? AND type = 3");
+	$stmt_wrate->bind_param("i", $bid);
+	$stmt_wrate->execute();
+	$wrate_res = $stmt_wrate->get_result();
+	if($wrate_res->num_rows > 0){
+		$wr = $wrate_res->fetch_assoc();
+		$sys_w_rate = (float)$wr['rate'];
+		$wcons = (int)$wr['consumption'];
+	}
+	$stmt_wrate->close();
 }
 
-
-if(isset($bid)){
-$erate = $con->query("SELECT * from bills where billing_id = '".$bid."' and type = 2 ");
-if($erate->num_rows > 0){
-	$erate_res = $erate->fetch_array();
-	$sys_e_rate = $erate_res['rate'];
-	$econs = $erate_res['consumption'];
-}
-$wrate = $con->query("SELECT * from bills where billing_id = '".$bid."' and type = 3 ");
-if($wrate->num_rows > 0){
-	$wrate_res = $wrate->fetch_array();
-	$sys_w_rate = $wrate_res['rate'];
-	$wcons = $wrate_res['consumption'];
-}
-
-}
-
-$sys_e_rate = isset($sys_e_rate) ? $sys_e_rate : $_SESSION['sys']['electricity_rate']; 
-$sys_w_rate = isset($sys_w_rate) ? $sys_w_rate : $_SESSION['sys']['water_rate']; 
+$sys_e_rate = isset($sys_e_rate) ? (float)$sys_e_rate : (isset($_SESSION['sys']['electricity_rate']) ? (float)$_SESSION['sys']['electricity_rate'] : 15.0); 
+$sys_w_rate = isset($sys_w_rate) ? (float)$sys_w_rate : (isset($_SESSION['sys']['water_rate']) ? (float)$_SESSION['sys']['water_rate'] : 10.0); 
 ?> 
 <style type="text/css">
 	#prev_det p {
