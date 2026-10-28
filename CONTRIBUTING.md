@@ -34,14 +34,18 @@ Our software operates a **dual-property operational model**:
 git clone https://github.com/Yuvionix/Nilayam-Heights-HMS.git
 cd Nilayam-Heights-HMS
 
-# 2. Initialize database
+# 2. Configure private local environment (strictly git-ignored)
+cp .env.example .env.local
+# Set DB_USER, DB_PASS, DB_PORT if different from defaults
+
+# 3. Initialize database
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS hms;"
 mysql -u root hms < "HMS-2/hms.sql"
 
-# 3. Start local server
+# 4. Start local development server
 php -S 127.0.0.1:8000 -t HMS-2
 
-# 4. Run test suite to verify 100% green status
+# 5. Run test suite to verify 100% green status
 php scratch/test_all_features.php
 ```
 
@@ -93,6 +97,12 @@ require_once(__DIR__ . "/../../Includes/config.php");
 require_once(__DIR__ . "/../../Includes/session.php");
 require_role('admin', '../../login.php');
 ```
+
+### Rule 5: Credential Isolation via `.env.local`
+Never hardcode passwords or sensitive credentials in PHP files. Always load environment variables using `hms_env('KEY', 'default')`.
+- All secret local overrides belong exclusively in `.env.local`.
+- `.env.local` is strictly in `.gitignore` and must never be committed.
+- When introducing a new environment variable, document it in `.env.example` with clear comments.
 
 ---
 

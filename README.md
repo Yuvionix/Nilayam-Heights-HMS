@@ -176,13 +176,28 @@ Society-Management-System/
 - **PHP 8.0+** with `mysqli`, `pdo_mysql`, and `gd` enabled (`php -v`)
 - **MySQL 8.0+** running on `localhost:3306`
 
-#### 2. Import Database
+#### 2. Configure Environment Credentials (.env.local)
+```bash
+# Copy the environment template for local development
+cp .env.example .env.local
+
+# Edit .env.local if your MySQL username, password, or port differs from defaults
+# DB_HOST=localhost
+# DB_PORT=3306
+# DB_NAME=hms
+# DB_USER=root
+# DB_PASS=your_password_here
+```
+> [!NOTE]
+> `.env.local` is strictly ignored by Git. Your passwords and credentials will never be exposed or pushed to GitHub.
+
+#### 3. Import Database
 ```bash
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS hms;"
 mysql -u root hms < "HMS-2/hms.sql"
 ```
 
-#### 3. Start Development Server
+#### 4. Start Development Server
 ```bash
 php -S 127.0.0.1:8000 -t HMS-2
 ```
