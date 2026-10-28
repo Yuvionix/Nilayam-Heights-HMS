@@ -1,10 +1,12 @@
 # Production Dockerfile for Nilayam Heights Society Management System & Yadav PG
-# Engineered by Yuvraj — Optimized for Render.com Free Tier
+# Engineered by Yuvraj — Self-Contained Deployment (Built-in MariaDB + Dynamic Port)
 
 FROM php:8.2-apache
 
-# Install system dependencies and MySQL PDO extensions
+# Install system dependencies, MySQL/MariaDB server and PHP extensions
 RUN apt-get update && apt-get install -y \
+    mariadb-server \
+    mariadb-client \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -21,7 +23,7 @@ WORKDIR /var/www/html
 # Copy project files into webroot
 COPY . /var/www/html/
 
-# Copy dynamic port entrypoint script for Render
+# Copy dynamic port and database entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
@@ -32,7 +34,7 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose standard HTTP port (overridden dynamically by entrypoint.sh via $PORT)
 EXPOSE 80
 
-# Dynamic port binding entrypoint
+# Dynamic port binding and DB initialization entrypoint
 ENTRYPOINT ["entrypoint.sh"]
 
 # Start Apache in foreground
